@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+      body{
+    margin:0;
+    background:#222;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    padding-top:20px;
+}
+
+#game{
+    background:black;
+    border:3px solid white;
+}
+
+#controls{
+    margin-top:15px;
+    text-align:center;
+}
+
+#controls button{
+    width:60px;
+    height:60px;
+    font-size:24px;
+    margin:3px;
+}
+    </style>
+</head>
+<body>
+
+    <canvas id="game" width="400" height="400"></canvas>
+
+    
+
+    <script>
+      const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const box = 20;
+
+// Gambar apel
+const appleImg = new Image();
+appleImg.src = "apel.png";
+
+let snake = [
+    { x: 200, y: 200 }
+];
+
+let food = randomFood();
+
+let dx = box;
+let dy = 0;
+
+let score = 0;
+let gameOver = false;
+
+document.addEventListener("keydown", changeDirection);
+
+function randomFood() {
+    return {
+        x: Math.floor(Math.random() * 20) * box,
+        y: Math.floor(Math.random() * 20) * box
+    };
+}
+
+function changeDirection(event) {
+    if (event.key === "ArrowUp" && dy === 0) {
+        dx = 0;
+        dy = -box;
+    }
+
+    if (event.key === "ArrowDown" && dy === 0) {
+        dx = 0;
+        dy = box;
+    }
+
+    if (event.key === "ArrowLeft" && dx === 0) {
+        dx = -box;
+        dy = 0;
+    }
+
+    if (event.key === "ArrowRight" && dx === 0) {
+        dx = box;
+        dy = 0;
+    }
+}
+
+function checkCollision(head) {
+    for (let i = 0; i < snake.length; i++) {
+        if (
+            head.x === snake[i].x &&
+            head.y === snake[i].y
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function draw() {
+
+    if (gameOver) return;
+
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, 400, 400);
+
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
+    ctx.textAlign = "left";
+    ctx.fillText("Score: " + score, 10, 25);
+
+    // Gambar apel
+    if (appleImg.complete) {
+        ctx.drawImage(
+            appleImg,
+            food.x,
+            food.y,
+            box,
+            box
+        );
+    } else {
+        ctx.fillStyle = "red";
+        ctx.fillRect(food.x, food.y, box, box);
+    }
+
+    let head = {
+        x: snake[0].x + dx,
+        y: snake[0].y + dy
+    };
+
+    if (
+        head.x < 0 ||
+        head.x >= 400 ||
+        head.y < 0 ||
+        head.y >= 400
+    ) {
+        endGame();
+        return;
+    }
+
+    if (checkCollision(head)) {
+        endGame();
+        return;
+    }
+
+    if (
+        head.x === food.x &&
+        head.y === food.y
+    ) {
+        score++;
+        food = randomFood();
+    } else {
+        snake.pop();
+    }
+
+    snake.unshift(head);
+
+    // Ular
+    snake.forEach((part, index) => {
+
+        if (index === 0) {
+            // Kepala
+            ctx.fillStyle = "#00ff00";
+        } else {
+            // Badan
+            ctx.fillStyle = "#00aa00";
+        }
+
+        ctx.fillRect(
+            part.x,
+            part.y,
+            box,
+            box
+        );
+
+        ctx.strokeStyle = "#003300";
+        ctx.strokeRect(
+            part.x,
+            part.y,
+            box,
+            box
+        );
+    });
+}
+
+function endGame() {
+    gameOver = true;
+
+    ctx.fillStyle = "rgba(0,0,0,0.7)";
+    ctx.fillRect(0, 0, 400, 400);
+
+    ctx.fillStyle = "red";
+    ctx.font = "40px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText("GAME OVER", 200, 180);
+
+    ctx.fillStyle = "white";
+    ctx.font = "25px Arial";
+    ctx.fillText(
+        "Score: " + score,
+        200,
+        230
+    );
+}
+
+setInterval(draw, 150);
+
+/* =========================
+   KONTROL SWIPE HP
+========================= */
+
+let startX = 0;
+let startY = 0;
+
+canvas.addEventListener("touchstart", (e) => {
+    const touch = e.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+});
+
+canvas.addEventListener("touchend", (e) => {
+    const touch = e.changedTouches[0];
+
+    let endX = touch.clientX;
+    let endY = touch.clientY;
+
+    let diffX = endX - startX;
+    let diffY = endY - startY;
+
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+
+        if (diffX > 20 && dx === 0) {
+            dx = box;
+            dy = 0;
+        }
+
+        if (diffX < -20 && dx === 0) {
+            dx = -box;
+            dy = 0;
+        }
+
+    } else {
+
+        if (diffY > 20 && dy === 0) {
+            dx = 0;
+            dy = box;
+        }
+
+        if (diffY < -20 && dy === 0) {
+            dx = 0;
+            dy = -box;
+        }
+
+    }
+});
+    </script>
+
+</body>
+</html>
