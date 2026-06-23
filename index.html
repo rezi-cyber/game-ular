@@ -1,18 +1,14 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game</title>
-    <style>
-      body{
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snake Game</title><style>
+body{
     margin:0;
     background:#222;
-
     display:flex;
     flex-direction:column;
     align-items:center;
-
     padding-top:20px;
 }
 
@@ -27,31 +23,42 @@
 }
 
 #controls button{
-    width:60px;
-    height:60px;
-    font-size:24px;
-    margin:3px;
+    width:70px;
+    height:70px;
+    font-size:30px;
+    margin:4px;
+    border:none;
+    border-radius:12px;
+    background:#444;
+    color:white;
 }
-    </style>
-</head>
-<body>
 
-    <canvas id="game" width="400" height="400"></canvas>
+#controls button:active{
+    background:#666;
+}
+</style></head>
+<body><canvas id="game" width="400" height="400"></canvas>
 
-    
+<div id="controls">
+    <div>
+        <button onclick="setDirection('up')">↑</button>
+    </div><div>
+    <button onclick="setDirection('left')">←</button>
+    <button onclick="setDirection('down')">↓</button>
+    <button onclick="setDirection('right')">→</button>
+</div>
 
-    <script>
-      const canvas = document.getElementById("game");
+</div><script>
+const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 const box = 20;
 
-// Gambar apel
 const appleImg = new Image();
 appleImg.src = "apel.png";
 
 let snake = [
-    { x: 200, y: 200 }
+    {x:200,y:200}
 ];
 
 let food = randomFood();
@@ -64,61 +71,79 @@ let gameOver = false;
 
 document.addEventListener("keydown", changeDirection);
 
-function randomFood() {
-    return {
-        x: Math.floor(Math.random() * 20) * box,
-        y: Math.floor(Math.random() * 20) * box
+function randomFood(){
+    return{
+        x:Math.floor(Math.random()*20)*box,
+        y:Math.floor(Math.random()*20)*box
     };
 }
 
-function changeDirection(event) {
-    if (event.key === "ArrowUp" && dy === 0) {
-        dx = 0;
-        dy = -box;
+function setDirection(dir){
+
+    if(dir==="up" && dy===0){
+        dx=0;
+        dy=-box;
     }
 
-    if (event.key === "ArrowDown" && dy === 0) {
-        dx = 0;
-        dy = box;
+    if(dir==="down" && dy===0){
+        dx=0;
+        dy=box;
     }
 
-    if (event.key === "ArrowLeft" && dx === 0) {
-        dx = -box;
-        dy = 0;
+    if(dir==="left" && dx===0){
+        dx=-box;
+        dy=0;
     }
 
-    if (event.key === "ArrowRight" && dx === 0) {
-        dx = box;
-        dy = 0;
+    if(dir==="right" && dx===0){
+        dx=box;
+        dy=0;
     }
 }
 
-function checkCollision(head) {
-    for (let i = 0; i < snake.length; i++) {
-        if (
-            head.x === snake[i].x &&
-            head.y === snake[i].y
-        ) {
+function changeDirection(e){
+
+    if(e.key==="ArrowUp"){
+        setDirection("up");
+    }
+
+    if(e.key==="ArrowDown"){
+        setDirection("down");
+    }
+
+    if(e.key==="ArrowLeft"){
+        setDirection("left");
+    }
+
+    if(e.key==="ArrowRight"){
+        setDirection("right");
+    }
+}
+
+function checkCollision(head){
+    for(let i=0;i<snake.length;i++){
+        if(
+            head.x===snake[i].x &&
+            head.y===snake[i].y
+        ){
             return true;
         }
     }
     return false;
 }
 
-function draw() {
+function draw(){
 
-    if (gameOver) return;
+    if(gameOver) return;
 
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, 400, 400);
+    ctx.fillStyle="black";
+    ctx.fillRect(0,0,400,400);
 
-    ctx.fillStyle = "white";
-    ctx.font = "20px Arial";
-    ctx.textAlign = "left";
-    ctx.fillText("Score: " + score, 10, 25);
+    ctx.fillStyle="white";
+    ctx.font="20px Arial";
+    ctx.fillText("Score: "+score,10,25);
 
-    // Gambar apel
-    if (appleImg.complete) {
+    if(appleImg.complete){
         ctx.drawImage(
             appleImg,
             food.x,
@@ -126,53 +151,52 @@ function draw() {
             box,
             box
         );
-    } else {
-        ctx.fillStyle = "red";
-        ctx.fillRect(food.x, food.y, box, box);
+    }else{
+        ctx.fillStyle="red";
+        ctx.fillRect(
+            food.x,
+            food.y,
+            box,
+            box
+        );
     }
 
-    let head = {
-        x: snake[0].x + dx,
-        y: snake[0].y + dy
+    let head={
+        x:snake[0].x+dx,
+        y:snake[0].y+dy
     };
 
-    if (
-        head.x < 0 ||
-        head.x >= 400 ||
-        head.y < 0 ||
-        head.y >= 400
-    ) {
+    if(
+        head.x<0 ||
+        head.x>=400 ||
+        head.y<0 ||
+        head.y>=400
+    ){
         endGame();
         return;
     }
 
-    if (checkCollision(head)) {
+    if(checkCollision(head)){
         endGame();
         return;
     }
 
-    if (
-        head.x === food.x &&
-        head.y === food.y
-    ) {
+    if(
+        head.x===food.x &&
+        head.y===food.y
+    ){
         score++;
-        food = randomFood();
-    } else {
+        food=randomFood();
+    }else{
         snake.pop();
     }
 
     snake.unshift(head);
 
-    // Ular
-    snake.forEach((part, index) => {
+    snake.forEach((part,index)=>{
 
-        if (index === 0) {
-            // Kepala
-            ctx.fillStyle = "#00ff00";
-        } else {
-            // Badan
-            ctx.fillStyle = "#00aa00";
-        }
+        ctx.fillStyle=
+        index===0 ? "#00ff00" : "#00aa00";
 
         ctx.fillRect(
             part.x,
@@ -181,7 +205,7 @@ function draw() {
             box
         );
 
-        ctx.strokeStyle = "#003300";
+        ctx.strokeStyle="#003300";
         ctx.strokeRect(
             part.x,
             part.y,
@@ -191,77 +215,31 @@ function draw() {
     });
 }
 
-function endGame() {
-    gameOver = true;
+function endGame(){
 
-    ctx.fillStyle = "rgba(0,0,0,0.7)";
-    ctx.fillRect(0, 0, 400, 400);
+    gameOver=true;
 
-    ctx.fillStyle = "red";
-    ctx.font = "40px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("GAME OVER", 200, 180);
+    ctx.fillStyle="rgba(0,0,0,0.7)";
+    ctx.fillRect(0,0,400,400);
 
-    ctx.fillStyle = "white";
-    ctx.font = "25px Arial";
+    ctx.fillStyle="red";
+    ctx.font="40px Arial";
+    ctx.textAlign="center";
     ctx.fillText(
-        "Score: " + score,
+        "GAME OVER",
+        200,
+        180
+    );
+
+    ctx.fillStyle="white";
+    ctx.font="25px Arial";
+    ctx.fillText(
+        "Score: "+score,
         200,
         230
     );
 }
 
-setInterval(draw, 150);
-
-/* =========================
-   KONTROL SWIPE HP
-========================= */
-
-let startX = 0;
-let startY = 0;
-
-canvas.addEventListener("touchstart", (e) => {
-    const touch = e.touches[0];
-    startX = touch.clientX;
-    startY = touch.clientY;
-});
-
-canvas.addEventListener("touchend", (e) => {
-    const touch = e.changedTouches[0];
-
-    let endX = touch.clientX;
-    let endY = touch.clientY;
-
-    let diffX = endX - startX;
-    let diffY = endY - startY;
-
-    if (Math.abs(diffX) > Math.abs(diffY)) {
-
-        if (diffX > 20 && dx === 0) {
-            dx = box;
-            dy = 0;
-        }
-
-        if (diffX < -20 && dx === 0) {
-            dx = -box;
-            dy = 0;
-        }
-
-    } else {
-
-        if (diffY > 20 && dy === 0) {
-            dx = 0;
-            dy = box;
-        }
-
-        if (diffY < -20 && dy === 0) {
-            dx = 0;
-            dy = -box;
-        }
-
-    }
-});
-    </script>
-
-</body>
+setInterval(draw,150);
+</script></body>
 </html>
